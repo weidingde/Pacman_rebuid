@@ -1,19 +1,24 @@
 package de.tu_darmstadt.gdi1.pacman.model;
+
 import java.util.List;
+import java.util.Random;
 
 import org.newdawn.slick.geom.Vector2f;
 
 public class Teleporter extends MapElement {
-	
+
 	public Teleporter(Vector2f position) {
-		
+
 		super(position);
-		
+
 	}
 
-	public Vector2f getTeleportPosition(String[][] mapData) {
-		Vector2f teleportPosition=new Vector2f();
-		return teleportPosition;
+	public Vector2f getTeleportPosition(MapElement[][] mapData, Random a) {
+		int i,j;
+		do {
+			 i = a.nextInt(mapData.length);
+			 j = a.nextInt(mapData[0].length);
+		} while (!(mapData[i][j] instanceof Item)&& !mapData[i][j].isEffected());
+		return new Vector2f(mapData[i][j].getPosition());
 	}
-
 }
