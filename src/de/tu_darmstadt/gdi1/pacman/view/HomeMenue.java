@@ -28,7 +28,7 @@ public class HomeMenue extends BasicGameState{
 	public void render(GameContainer gc, StateBasedGame arg1, Graphics g)
 			throws SlickException {
 	
-		g.drawImage(background,0,0);
+		g.drawImage(background,0,0,0,0,1400,870);
 		g.setColor(Color.red);
 		g.drawString("ajhaja", 100, 100);
 		
