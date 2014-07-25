@@ -26,7 +26,7 @@ public abstract class Figur {
 		this.isAte = false;
 	}
 
-	public void autoMove (MapElement[][] mapElement) {
+	public Vector2f getAutomovePosition (MapElement[][] mapElement) {
 		switch (currentDirection) {
 		case LEFT: 
 			if (nextPosition == currentPosition){
@@ -105,6 +105,7 @@ public abstract class Figur {
 			hitBox.setCenterY(currentPosition.y);
 			break;
 		}
+		return currentPosition;
 	}
 
 	public Vector2f getNextPosition() {
@@ -121,10 +122,6 @@ public abstract class Figur {
 
 	public void setTurnDirection(Direction turnDirection) {
 		this.turnDirection = turnDirection;
-	}
-
-	public Direction getCurrentDirection() {
-		return this.currentDirection;
 	}
 	
 	public void setCurrentDirection(Direction currentDirection) {
