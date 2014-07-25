@@ -21,6 +21,6 @@ public class Pacman extends StateBasedGame
 	 */
 	public void initStatesList(GameContainer gc) throws SlickException
 	{
-		//TODO
+		addState(new HomeMenue());
 	}
 }

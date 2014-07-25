@@ -10,7 +10,7 @@ public class Main
 	public static void main(String[] args) throws SlickException
 	{
 		// standardpfade initialisieren
-		setPaths();
+		//setPaths();
 
 		// engine starten
 		Pacman game = new Pacman();
@@ -23,7 +23,7 @@ public class Main
 		app.start();
 	}
 
-	private static void setPaths()
+	/*private static void setPaths()
 	{
 		if (System.getProperty("os.name").toLowerCase().contains("windows"))
 			System.setProperty("org.lwjgl.librarypath",
@@ -34,5 +34,5 @@ public class Main
 		else
 			System.setProperty("org.lwjgl.librarypath",
 			System.getProperty("user.dir") + "/native/" + System.getProperty("os.name").toLowerCase());
-	}
+	}*/
 }
