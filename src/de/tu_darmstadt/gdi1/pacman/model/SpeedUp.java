@@ -7,15 +7,9 @@ import org.newdawn.slick.geom.Vector2f;
 
 public class SpeedUp extends SpecialItem{
 
-<<<<<<< HEAD
 	public SpeedUp(Vector2f position,List<Directions> forks) {
 		
 		super(position,forks);
-		
-=======
-	public SpeedUp(Vector2f position) {		
-		super(position,false);		
->>>>>>> FETCH_HEAD
 	}
 
 }

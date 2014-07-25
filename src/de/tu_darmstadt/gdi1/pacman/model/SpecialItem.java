@@ -4,23 +4,13 @@ import java.util.List;
 
 import org.newdawn.slick.geom.Vector2f;
 
-<<<<<<< HEAD
-public class SpecialItem extends Item{
-	
-	float timeLast;
-	
-	public SpecialItem(Vector2f position, List<Directions> forks, float timeLast, float activatedTime) {
-		
-		super(position, forks);
-		
-=======
 public abstract class SpecialItem extends Item {
 
 	private long activeTime;
 	private float changedSpeed;
 
-	public SpecialItem(Vector2f position, boolean isFork) {
-		super(position, isFork);
+	public SpecialItem(Vector2f position, List<Directions> forks) {
+		super(position, forks);
 	}
 
 	public long getActiveTime() {
@@ -37,7 +27,7 @@ public abstract class SpecialItem extends Item {
 
 	public void setChangedSpeed(float changedSpeed) {
 		this.changedSpeed = changedSpeed;
->>>>>>> FETCH_HEAD
+
 	}
 
 }
