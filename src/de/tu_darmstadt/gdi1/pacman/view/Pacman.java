@@ -26,5 +26,6 @@ public final static int GAME=1;
 	public void initStatesList(GameContainer gc) throws SlickException
 	{
 		addState(new HomeMenue());
+		addState(new Game());
 	}
 }

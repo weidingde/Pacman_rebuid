@@ -4,7 +4,7 @@ import java.io.File;
 
 public class Model {
 	
-	MapReader mapReader;
+	public MapReader mapReader;
 	
 	private MapElement[][] mapElements;
 	

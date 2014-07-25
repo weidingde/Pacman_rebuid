@@ -14,7 +14,6 @@ import org.newdawn.slick.geom.Vector2f;
 
 import de.tu_darmstadt.gdi1.pacman.exceptions.*;
 
-
 /**
  * 
  * 
@@ -99,9 +98,7 @@ public class MapReader {
 				// System.out.println(mapData[row].length);
 				for (int col = 0; col < width; col++) {
 					cacheMapData[row][col] = String.valueOf(elements[col]);
-					//System.out.print("cacheMap scan: row:"+row+" col:"+col);
-					//System.out.println(elements[col]);
-					
+
 				}
 			}
 		} catch (Exception e) {
@@ -121,8 +118,6 @@ public class MapReader {
 		try {
 			for (int i = 0; i < height; i++) {
 				for (int j = 0; j < width; j++) {
-//					System.out.print("MapData: i:"+i+" j:"+j);
-//					System.out.println(cacheMapData[i][j]);
 					// j*MAPDENSITY as x coordinate, i*MAPDENSITY as y
 					// coordinate
 					float[] xy = { j * MAPDENSITY, i * MAPDENSITY };
@@ -130,29 +125,26 @@ public class MapReader {
 					if (cacheMapData[i][j].equals("X")) {
 						mapData[i][j] = new Wall(new Vector2f(xy), getWallType(
 								i, j));
-						System.out.println("i: "+i+" j: "+j+" "+getWallType(i, j).toString());
-					}else if (cacheMapData[i][j].equals(" ")){
-						mapData[i][j] = new Dot(new Vector2f(xy), isFork(i, j));
+					} else if (cacheMapData[i][j].equals(" ")) {
+						mapData[i][j] = new Dot(new Vector2f(xy), forks(i, j));
 						item++;
-					}
-					else if (cacheMapData[i][j].equals("P")) {
+					} else if (cacheMapData[i][j].equals("P")) {
 						mapData[i][j] = new PlayerSpawnPoint(new Vector2f(xy));
 						ps++;
 						aPlayerSpawnPointCol = j;
 						aPlayerSpawnPointRow = i;
-					}
-					else if (cacheMapData[i][j].equals("G")) {
+					} else if (cacheMapData[i][j].equals("G")) {
 						mapData[i][j] = new GhostSpawnPoint(new Vector2f(xy));
 						gs++;
 					} else if (cacheMapData[i][j].equals("B"))
 						mapData[i][j] = new InvisibleWall(new Vector2f(xy));
 					else if (cacheMapData[i][j].equals("S")) {
-						mapData[i][j] = new SpeedUp(new Vector2f(xy));
+						mapData[i][j] = new SpeedUp(new Vector2f(xy), forks(i, j));
 						item++;
-					}else if (cacheMapData[i][j].equals("T"))
+					} else if (cacheMapData[i][j].equals("T"))
 						mapData[i][j] = new Teleporter(new Vector2f(xy));
 					else if (cacheMapData[i][j].equals("U")) {
-						mapData[i][j] = new PowerUp(new Vector2f(xy));
+						mapData[i][j] = new PowerUp(new Vector2f(xy), forks(i, j));
 						item++;
 					} else
 						// thrwo invalidLevelCharacterException
@@ -175,17 +167,25 @@ public class MapReader {
 	}
 
 	private boolean isAllAreaAchievable() {
-
-		MapElement[][] tempMap = mapData.clone();
+		// mark all point that the player could reach as 1, else as 0
+		int[][] tempMap = new int[height][width];
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (mapData[i][j] instanceof Item
+						|| mapData[i][j] instanceof Teleporter
+						|| mapData[i][j] instanceof PlayerSpawnPoint)
+					tempMap[i][j] = 1;
+				else
+					tempMap[i][j] = 0;
+			}
+		}
 
 		eatAllItems(tempMap, aPlayerSpawnPointRow, aPlayerSpawnPointCol);
 
 		int unreachablePoint = 0;
 		for (int i = 0; i < height; i++) {
 			for (int j = 0; j < width; j++) {
-				if (mapData[i][j] != null && !(mapData[i][j] instanceof Wall)
-						&& !(mapData[i][j] instanceof InvisibleWall)
-						&& !(mapData[i][j] instanceof GhostSpawnPoint)) {
+				if (tempMap[i][j] == 1) {
 					unreachablePoint++;
 				}
 			}
@@ -193,57 +193,64 @@ public class MapReader {
 
 		try {
 			if (unreachablePoint > 0) {
-				System.out.println(unreachablePoint);
+				System.out
+						.println(unreachablePoint + " points are unreachable");
 				throw new ReachabilityException();
 			}
 		} catch (ReachabilityException e) {
 			System.out.println(e);
 			return false;
 		}
-		
+
 		return true;
 
 	}
 
-	private void eatAllItems(MapElement[][] me, int i, int j) {
-		
-		//System.out.println(me[i][j].toString()+" deleted");
-		me[i][j] = null;
-		
-		try{
-		if (me[i][j - 1] instanceof Item
-				|| me[i][j - 1] instanceof Teleporter
-				|| me[i][j - 1] instanceof PlayerSpawnPoint) {
-			eatAllItems(me, i, j - 1);
+	private void eatAllItems(int[][] tempMap, int i, int j) {
+
+		tempMap[i][j] = 0;
+
+		if (j > 0
+				&& tempMap[i][j - 1] == 1
+				&& (mapData[i][j - 1] instanceof Item
+						|| mapData[i][j - 1] instanceof Teleporter || mapData[i][j - 1] instanceof PlayerSpawnPoint)) {
+			eatAllItems(tempMap, i, j - 1);
 		}
-		if (j + 1 < width &&( me[i][j + 1] instanceof Item
-				|| me[i][j + 1] instanceof Teleporter
-				|| me[i][j + 1] instanceof PlayerSpawnPoint)) {
-			eatAllItems(me, i, j + 1);
+		if (j + 1 < width
+				&& tempMap[i][j + 1] == 1
+				&& (mapData[i][j + 1] instanceof Item
+						|| mapData[i][j + 1] instanceof Teleporter || mapData[i][j + 1] instanceof PlayerSpawnPoint)) {
+			eatAllItems(tempMap, i, j + 1);
 		}
-		if (i - 1 >= 0 &&( me[i - 1][j] instanceof Item
-				|| me[i - 1][j] instanceof Teleporter
-				|| me[i][j - 1] instanceof PlayerSpawnPoint)) {
-			eatAllItems(me, i-1,j);
+		if (i - 1 >= 0
+				&& tempMap[i - 1][j] == 1
+				&& (mapData[i - 1][j] instanceof Item
+						|| mapData[i - 1][j] instanceof Teleporter || mapData[i][j - 1] instanceof PlayerSpawnPoint)) {
+			eatAllItems(tempMap, i - 1, j);
 		}
-		if (i + 1 < height &&( me[i + 1][j] instanceof Item
-				|| me[i + 1][j] instanceof Teleporter
-				|| me[i+1][j] instanceof PlayerSpawnPoint)) {
-			eatAllItems(me, i+1, j);
-		}
-		}catch(Exception e){
-			System.out.println("i: "+i+" j: "+ j+" went wrong");
+		if (i + 1 < height
+				&& tempMap[i + 1][j] == 1
+				&& (mapData[i + 1][j] instanceof Item
+						|| mapData[i + 1][j] instanceof Teleporter || mapData[i + 1][j] instanceof PlayerSpawnPoint)) {
+			eatAllItems(tempMap, i + 1, j);
 		}
 
-
-		if (i == 0 && me[height - 1][j] instanceof Wall) {
-			eatAllItems(me, height - 1, j);
-		} else if (i == height - 1 && me[0][j] instanceof Wall) {
-			eatAllItems(me, 0, j);
-		} else if (j == 0 && me[i][width - 1] instanceof Wall) {
-			eatAllItems(me, i, width - 1);
-		} else if (j == width - 1 && me[i][0] instanceof Wall) {
-			eatAllItems(me, i, 0);
+		if (i == 0 && tempMap[height - 1][j] == 1
+				&& !(mapData[height - 1][j] instanceof Wall)
+				&& !(mapData[height - 1][j] instanceof InvisibleWall)) {
+			eatAllItems(tempMap, height - 1, j);
+		} else if (i == height - 1 && tempMap[0][j] == 1
+				&& !(mapData[0][j] instanceof Wall)
+				&& !(mapData[0][j] instanceof InvisibleWall)) {
+			eatAllItems(tempMap, 0, j);
+		} else if (j == 0 && tempMap[i][width - 1] == 1
+				&& !(mapData[i][width - 1] instanceof Wall)
+				&& !(mapData[i][width - 1] instanceof InvisibleWall)) {
+			eatAllItems(tempMap, i, width - 1);
+		} else if (j == width - 1 && tempMap[i][0] == 1
+				&& !(mapData[i][0] instanceof Wall)
+				&& !(mapData[i][0] instanceof Wall)) {
+			eatAllItems(tempMap, i, 0);
 		}
 	}
 
@@ -256,19 +263,23 @@ public class MapReader {
 	 *            col of MapElement[][]
 	 * @return if it is a fork road
 	 */
-	private boolean isFork(int i, int j) {
-
-		int forkCounter = 0;
+	private List<Directions> forks(int i, int j) {
+		
+		//a point is a fork point, only if it has mindestens 3 neighbour walkablepoint
+		List<Directions> forks=new ArrayList<>();
 		if (isLeftWalkable(i, j))
-			forkCounter++;
+			forks.add(Directions.LEFT);
 		if (isRightWalkable(i, j))
-			forkCounter++;
+			forks.add(Directions.RIGHT);
 		if (isUpWalkable(i, j))
-			forkCounter++;
+			forks.add(Directions.UP);
 		if (isDownWalkable(i, j))
-			forkCounter++;
-
-		return forkCounter >= 3;
+			forks.add(Directions.DOWN);
+		
+		if(forks.size()<3)
+			 forks.clear();
+		
+		return forks;
 	}
 
 	private boolean isLeftWalkable(int i, int j) {
@@ -367,20 +378,16 @@ public class MapReader {
 		if (j == 0) {
 			return false;
 		} else {
-			return mapData[i][j - 1] instanceof Wall;
+			return cacheMapData[i][j - 1].equals("X");
 		}
-		
+
 	}
 
 	private boolean isRightWall(int i, int j) {
 		if (j == width - 1) {
-			System.out.println("rigtht is not wall "+i+" "+j);
 			return false;
 		} else {
-			
-			if(mapData[i][j + 1] instanceof Wall)
-				System.out.println("rigtht is a wall "+i+" "+j);
-			return mapData[i][j + 1] instanceof Wall;
+			return cacheMapData[i][j + 1].equals("X");
 		}
 	}
 
@@ -388,15 +395,15 @@ public class MapReader {
 		if (i == 0) {
 			return false;
 		} else {
-			return mapData[i - 1][j] instanceof Wall;
+			return cacheMapData[i - 1][j].equals("X");
 		}
 	}
 
 	private boolean isDownWall(int i, int j) {
-		if (i == height-1) {
+		if (i == height - 1) {
 			return false;
 		} else {
-			return mapData[i + 1][j] instanceof Wall;
+			return cacheMapData[i + 1][j].equals("X");
 		}
 	}
 

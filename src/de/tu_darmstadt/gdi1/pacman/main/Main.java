@@ -20,9 +20,9 @@ public class Main
 
 		// konfiguration festlegen
 		app.setDisplayMode(700, 435, false);
-		app.setShowFPS(false);
+		app.setShowFPS(true);
 		app.setTargetFrameRate(60);
-		//app.start();
+		app.start();
 	}
 
 	/*private static void setPaths()
