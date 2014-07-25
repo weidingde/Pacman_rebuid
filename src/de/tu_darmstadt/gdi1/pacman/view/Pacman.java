@@ -9,8 +9,12 @@ import eea.engine.entity.StateBasedEntityManager;
 /**
  * Grundgerüst eines FSMs
  */
-public class Pacman extends StateBasedGame
-{
+public class Pacman extends StateBasedGame{
+
+public final static int HOMEMENUE=0;
+public final static int GAME=1;
+
+
 	public Pacman() throws SlickException
 	{
 		super("GDI1 Praktikum: Pacman");

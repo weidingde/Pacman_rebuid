@@ -20,31 +20,40 @@ public class HomeMenue extends BasicGameState{
 			throws SlickException {
 		
 		startButton=new Rectangle(240, 40, 120, 40);
-		background=new Image("res/pictures/theme1/ui/life.png");
+		background=new Image("res/pictures/theme1/ui/background.jpg");
 		
 	}
-
+	
+	@Override
+	public void update(GameContainer gc, StateBasedGame arg1, int arg2)
+			throws SlickException {
+		//start game
+		if(startButton.contains(gc.getInput().getMouseX(),gc.getInput().getMouseY())&&gc.getInput().isMousePressed(0))
+			arg1.enterState(Pacman.GAME);
+	}
 	@Override
 	public void render(GameContainer gc, StateBasedGame arg1, Graphics g)
 			throws SlickException {
 	
-		g.drawImage(background,0,0,0,0,1400,870);
-		g.setColor(Color.red);
-		g.drawString("ajhaja", 100, 100);
+		g.drawImage(background,0,0,700,435,0,0,1400,870);
 		
-	}
-
-	@Override
-	public void update(GameContainer arg0, StateBasedGame arg1, int arg2)
-			throws SlickException {
-		// TODO Auto-generated method stub
+		if(startButton.contains(gc.getInput().getMouseX(),gc.getInput().getMouseY())){
+			g.setColor(Color.yellow);
+			g.fill(startButton);
+		}else {
+			g.setColor(Color.white);
+			g.fill(startButton);
+		}
+		
+		g.setColor(Color.black);
+		g.drawString("START GAME", 245, 50);
 		
 	}
 
 	@Override
 	public int getID() {
 		// TODO Auto-generated method stub
-		return 0;
+		return Pacman.HOMEMENUE;
 	}
 
 

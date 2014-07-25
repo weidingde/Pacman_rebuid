@@ -12,7 +12,8 @@ import java.util.List;
 import org.lwjgl.Sys;
 import org.newdawn.slick.geom.Vector2f;
 
-import exceptions.*;
+import de.tu_darmstadt.gdi1.pacman.exceptions.*;
+
 
 /**
  * 
@@ -40,8 +41,6 @@ public class MapReader {
 		initHW();
 		initMapData();
 		intElementCoordinates();
-		if(mapData[0][1] instanceof Wall)
-			System.out.println("0 1 is wall");
 		isAllAreaAchievable();
 
 	}
@@ -131,8 +130,7 @@ public class MapReader {
 					if (cacheMapData[i][j].equals("X")) {
 						mapData[i][j] = new Wall(new Vector2f(xy), getWallType(
 								i, j));
-						//System.out.print(i+" "+j);
-						//System.out.println(getWallType(i, j).toString());
+						System.out.println("i: "+i+" j: "+j+" "+getWallType(i, j).toString());
 					}else if (cacheMapData[i][j].equals(" ")){
 						mapData[i][j] = new Dot(new Vector2f(xy), isFork(i, j));
 						item++;
@@ -179,8 +177,6 @@ public class MapReader {
 	private boolean isAllAreaAchievable() {
 
 		MapElement[][] tempMap = mapData.clone();
-		
-		System.out.println(tempMap[0][0]);
 
 		eatAllItems(tempMap, aPlayerSpawnPointRow, aPlayerSpawnPointCol);
 
@@ -211,11 +207,11 @@ public class MapReader {
 
 	private void eatAllItems(MapElement[][] me, int i, int j) {
 		
-		System.out.println(me[i][j].toString()+" deleted");
+		//System.out.println(me[i][j].toString()+" deleted");
 		me[i][j] = null;
 		
 		try{
-		if (j > 0 && me[i][j - 1] instanceof Item
+		if (me[i][j - 1] instanceof Item
 				|| me[i][j - 1] instanceof Teleporter
 				|| me[i][j - 1] instanceof PlayerSpawnPoint) {
 			eatAllItems(me, i, j - 1);
@@ -236,7 +232,7 @@ public class MapReader {
 			eatAllItems(me, i+1, j);
 		}
 		}catch(Exception e){
-			System.out.println("i: "+i+" j: "+ j);
+			System.out.println("i: "+i+" j: "+ j+" went wrong");
 		}
 
 
@@ -378,8 +374,12 @@ public class MapReader {
 
 	private boolean isRightWall(int i, int j) {
 		if (j == width - 1) {
+			System.out.println("rigtht is not wall "+i+" "+j);
 			return false;
 		} else {
+			
+			if(mapData[i][j + 1] instanceof Wall)
+				System.out.println("rigtht is a wall "+i+" "+j);
 			return mapData[i][j + 1] instanceof Wall;
 		}
 	}

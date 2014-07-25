@@ -3,24 +3,26 @@ package de.tu_darmstadt.gdi1.pacman.main;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.SlickException;
 
+import de.tu_darmstadt.gdi1.pacman.model.Model;
 import de.tu_darmstadt.gdi1.pacman.view.Pacman;
 
 public class Main
 {
 	public static void main(String[] args) throws SlickException
 	{
-		// standardpfade initialisieren
+		// standardpfade initi		
 		//setPaths();
 
 		// engine starten
 		Pacman game = new Pacman();
 		AppGameContainer app = new AppGameContainer(game);
+		Model model=new Model("res/levels/minimal.txt");
 
 		// konfiguration festlegen
 		app.setDisplayMode(700, 435, false);
 		app.setShowFPS(false);
 		app.setTargetFrameRate(60);
-		app.start();
+		//app.start();
 	}
 
 	/*private static void setPaths()
